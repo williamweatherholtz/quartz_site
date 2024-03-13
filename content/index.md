@@ -1,6 +1,7 @@
 ---
-title: Welcome to Quartz 4
+title: Welcome!
+publish: True
 ---
 
-This is a blank Quartz installation.
-See the [documentation](https://quartz.jzhao.xyz) for how to get started.
+
+Hi all, welcome to my site.  Feel free to look through my [[musings]], [[professional projects]], or [[casual projects]].

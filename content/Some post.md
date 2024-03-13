@@ -1,5 +1,6 @@
 ---
 title: Hi I'm a page
+publish: True
 tags:
   - swag
   - ger
