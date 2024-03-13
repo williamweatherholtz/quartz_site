@@ -27,15 +27,15 @@ export const defaultContentPageLayout: PageLayout = {
     Component.PageTitle(),
     Component.MobileOnly(Component.Spacer()),
     Component.MobileOnly(Component.Darkmode()),
-    Component.DesktopOnly(Component.Explorer()),
     Component.Search(),
     Component.DesktopOnly(Component.Explorer()),
+    Component.DesktopOnly(Component.Graph()),
   ],
   right: [
-    Component.Graph(),
+    Component.DesktopOnly(Component.Darkmode()),
+    Component.MobileOnly(Component.Graph()),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.MobileOnly(Component.Explorer()),
-    Component.DesktopOnly(Component.Darkmode()),
     Component.Backlinks(),
   ],
 }
