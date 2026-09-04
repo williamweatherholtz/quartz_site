@@ -418,9 +418,33 @@ export async function handleBuild(argv) {
       ),
     )
     console.log("hint: exit with ctrl+c")
+    // chokidar v4+ dropped glob support, so watch the tree and filter by extension
+    const watchExtensions = [".ts", ".tsx", ".scss"]
+    const outputPath = path.resolve(argv.output)
+    const cachePath = path.resolve(path.dirname(cacheFile))
     chokidar
-      .watch(["**/*.ts", "**/*.tsx", "**/*.scss", "package.json"], {
+      .watch(".", {
         ignoreInitial: true,
+        ignored: (fp, stats) => {
+          const abs = path.resolve(fp)
+          const base = path.basename(abs)
+          if (
+            base === "node_modules" ||
+            base === ".git" ||
+            base === ".quartz-cache" ||
+            abs === outputPath ||
+            abs.startsWith(outputPath + path.sep) ||
+            abs === cachePath ||
+            abs.startsWith(cachePath + path.sep)
+          ) {
+            return true
+          }
+          return (
+            !!stats?.isFile() &&
+            !watchExtensions.includes(path.extname(abs)) &&
+            base !== "package.json"
+          )
+        },
       })
       .on("all", async () => {
         build(clientRefresh)

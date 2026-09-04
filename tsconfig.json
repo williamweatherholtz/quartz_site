@@ -4,7 +4,7 @@
     "experimentalDecorators": true,
     "module": "esnext",
     "target": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "incremental": true,
     "resolveJsonModule": true,
@@ -14,7 +14,12 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
+    // micromorph's package.json "exports" map lacks a "types" condition,
+    // so moduleResolution "bundler" cannot find its declarations without this
+    "paths": {
+      "micromorph": ["./node_modules/micromorph/index.d.ts"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx", "./package.json"],
-  "exclude": ["build/**/*.d.ts"],
+  "exclude": ["build/**/*.d.ts"]
 }

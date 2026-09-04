@@ -14,7 +14,7 @@ import checkboxScript from "../../components/scripts/checkbox.inline.ts"
 import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
-import { PhrasingContent } from "mdast-util-find-and-replace/lib"
+import { PhrasingContent } from "mdast"
 import { capitalize } from "../../util/lang"
 import { PluggableList } from "unified"
 
@@ -118,7 +118,7 @@ const calloutLineRegex = new RegExp(/^> *\[\!\w+\][+-]?.*$/, "gm")
 // (?:[-_\p{L}\d\p{Z}])+       -> non-capturing group, non-empty string of (Unicode-aware) alpha-numeric characters and symbols, hyphens and/or underscores
 // (?:\/[-_\p{L}\d\p{Z}]+)*)   -> non-capturing group, matches an arbitrary number of tag strings separated by "/"
 const tagRegex = new RegExp(
-  /(?:^| )#((?:[-_\p{L}\p{Emoji}\p{M}\d])+(?:\/[-_\p{L}\p{Emoji}\p{M}\d]+)*)/,
+  /(?:^| )#((?:[-_\p{L}\p{Emoji}\p{M}\d])+(?:\/[-_\p{L}\p{Emoji}\p{M}\d]+)*)/u,
   "gu",
 )
 const blockReferenceRegex = new RegExp(/\^([-_A-Za-z0-9]+)$/, "g")
@@ -141,22 +141,16 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
 
   return {
     name: "ObsidianFlavoredMarkdown",
-    textTransform(_ctx, src) {
+    textTransform(_ctx, rawSrc) {
+      let src = rawSrc.toString()
+
       // do comments at text level
       if (opts.comments) {
-        if (src instanceof Buffer) {
-          src = src.toString()
-        }
-
         src = src.replace(commentRegex, "")
       }
 
       // pre-transform blockquotes
       if (opts.callouts) {
-        if (src instanceof Buffer) {
-          src = src.toString()
-        }
-
         src = src.replace(calloutLineRegex, (value) => {
           // force newline after title of callout
           return value + "\n> "
@@ -165,10 +159,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
 
       // pre-transform wikilinks (fix anchors to things that may contain illegal syntax e.g. codeblocks, latex)
       if (opts.wikilinks) {
-        if (src instanceof Buffer) {
-          src = src.toString()
-        }
-
         src = src.replace(wikilinkRegex, (value, ...capture) => {
           const [rawFp, rawHeader, rawAlias]: (string | undefined)[] = capture
 
@@ -460,7 +450,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options> 
                 node.data = {
                   hProperties: {
                     ...(node.data?.hProperties ?? {}),
-                    className: classNames.join(" "),
+                    className: classNames,
                     "data-callout": calloutType,
                     "data-callout-fold": collapse,
                   },
